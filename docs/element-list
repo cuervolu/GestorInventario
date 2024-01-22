@@ -1,0 +1,13 @@
+com.cuervolu.gestioninventario
+com.cuervolu.gestioninventario.advice
+com.cuervolu.gestioninventario.config
+com.cuervolu.gestioninventario.controllers
+com.cuervolu.gestioninventario.controllers.auth
+com.cuervolu.gestioninventario.controllers.dto
+com.cuervolu.gestioninventario.entities
+com.cuervolu.gestioninventario.entities.payload
+com.cuervolu.gestioninventario.repositories
+com.cuervolu.gestioninventario.security
+com.cuervolu.gestioninventario.security.filter
+com.cuervolu.gestioninventario.services
+com.cuervolu.gestioninventario.services.impl
