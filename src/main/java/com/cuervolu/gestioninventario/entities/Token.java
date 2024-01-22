@@ -1,16 +1,15 @@
 package com.cuervolu.gestioninventario.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import java.util.List;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,37 +22,43 @@ import lombok.ToString.Exclude;
 import org.hibernate.proxy.HibernateProxy;
 
 /**
- * Clase que representa un rol de usuario en el sistema.
+ * Clase que representa un token en el sistema.
  *
- * <p>Cada rol tiene un identificador único, un nombre que define su función y la lista de usuarios
- * asociados a ese rol.
+ * <p>Un token es utilizado para la autenticación y autorización de usuarios en el sistema. Contiene
+ * información como el tipo de token, si ha sido revocado o expirado, y la asociación con un
+ * usuario.
  *
- * <p>Esta entidad se utiliza para gestionar los roles de los usuarios en el sistema.
+ * <p>Esta entidad se utiliza para gestionar los tokens asociados a los usuarios.
  *
  * @author Cuervolu
  * @since 1.0.0
  */
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @ToString
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "roles")
-public class Role {
+public class Token {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  public Long id;
+
+  @Column(unique = true)
+  public String token;
 
   @Enumerated(EnumType.STRING)
-  @Column(unique = true)
-  private UserRole name;
+  public TokenType tokenType = TokenType.BEARER;
 
-  @JsonIgnoreProperties({"roles", "handler", "hibernateLazyInitializer"})
-  @ManyToMany(mappedBy = "roles")
+  public boolean revoked;
+
+  public boolean expired;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
   @Exclude
-  private List<UserEntity> users;
+  public UserEntity user;
 
   @Override
   public final boolean equals(Object o) {
@@ -68,8 +73,8 @@ public class Role {
             ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
             : this.getClass();
     if (thisEffectiveClass != oEffectiveClass) return false;
-    Role role = (Role) o;
-    return getId() != null && Objects.equals(getId(), role.getId());
+    Token token = (Token) o;
+    return getId() != null && Objects.equals(getId(), token.getId());
   }
 
   @Override

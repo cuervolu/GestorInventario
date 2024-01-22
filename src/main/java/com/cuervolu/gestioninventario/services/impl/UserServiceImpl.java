@@ -7,8 +7,10 @@ import com.cuervolu.gestioninventario.repositories.RoleRepository;
 import com.cuervolu.gestioninventario.repositories.UserRepository;
 import com.cuervolu.gestioninventario.services.IUserService;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,12 +33,12 @@ public class UserServiceImpl implements IUserService {
   @Override
   @Transactional
   public UserEntity save(UserEntity userEntity) {
-    Optional<Role> optionalRole = roleRepository.findByName(UserRole.ROLE_USER);
-    List<Role> roles = new ArrayList<>();
+    Optional<Role> optionalRole = roleRepository.findByName(UserRole.USER);
+    Set<Role> roles = new HashSet<>();
     optionalRole.ifPresent(roles::add);
 
     if (userEntity.isAdmin()) {
-      Optional<Role> optionalRoleAdmin = roleRepository.findByName(UserRole.ROLE_ADMIN);
+      Optional<Role> optionalRoleAdmin = roleRepository.findByName(UserRole.ADMIN);
       optionalRoleAdmin.ifPresent(roles::add);
     }
 

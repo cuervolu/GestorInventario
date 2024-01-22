@@ -29,6 +29,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controlador para la gestión de productos en el inventario.
+ *
+ * <p>Este controlador maneja las operaciones relacionadas con la gestión de productos en el sistema
+ * de inventario.
+ *
+ * @author cuervolu
+ * @since 1.0
+ * @version 1.0
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/products")
@@ -38,6 +48,11 @@ public class ProductController {
   private final IProductService productService;
   private final ICategoryService categoryService;
 
+  /**
+   * Obtiene todos los productos almacenados en la base de datos.
+   *
+   * @return Lista de productos encontrados.
+   */
   @Operation(
       summary = "Encuentra todos los productos",
       description = "Encuentra todos los productos en la base de datos y los retorna en una lista",
@@ -56,6 +71,12 @@ public class ProductController {
     return productService.findAll();
   }
 
+  /**
+   * Obtiene un producto por su ID.
+   *
+   * @param id ID del producto a buscar.
+   * @return ResponseEntity con el producto encontrado o un mensaje de error si no se encuentra.
+   */
   @Operation(
       summary = "Encuentra un producto por su id",
       description = "Encuentra un producto por su id en la base de datos y lo retorna",
@@ -86,6 +107,13 @@ public class ProductController {
     return ResponseEntity.notFound().build();
   }
 
+  /**
+   * Crea un nuevo producto en la base de datos.
+   *
+   * @param productDTO DTO que contiene la información del producto a crear.
+   * @return ResponseEntity con el producto creado y la URI de la ubicación del recurso.
+   * @throws URISyntaxException si hay un problema con la creación de la URI.
+   */
   @Operation(
       summary = "Crea un producto",
       description = "Crea un producto en la base de datos y lo retorna",
@@ -149,6 +177,14 @@ public class ProductController {
         .body(productService.save(product));
   }
 
+  /**
+   * Actualiza un producto existente en la base de datos.
+   *
+   * @param id ID del producto a actualizar.
+   * @param productDTO DTO que contiene la información actualizada del producto.
+   * @return ResponseEntity con el producto actualizado o un mensaje de error si no se encuentra.
+   * @throws URISyntaxException si hay un problema con la creación de la URI.
+   */
   @Operation(
       summary = "Actualiza un producto",
       description = "Actualiza un producto en la base de datos y lo retorna",
@@ -217,6 +253,13 @@ public class ProductController {
     return ResponseEntity.notFound().build();
   }
 
+  /**
+   * Elimina un producto de la base de datos.
+   *
+   * @param id ID del producto a eliminar.
+   * @return ResponseEntity con el estado de la eliminación o un mensaje de error si no se
+   *     encuentra.
+   */
   @Operation(
       summary = "Elimina un producto",
       parameters = @Parameter(name = "id", description = "El id del producto", required = true),
@@ -247,6 +290,12 @@ public class ProductController {
     return ResponseEntity.noContent().build();
   }
 
+  /**
+   * Busca una categoría por su nombre.
+   *
+   * @param categoryName Nombre de la categoría a buscar.
+   * @return Optional que contiene la categoría encontrada o está vacío si no se encuentra.
+   */
   private Optional<Category> findCategoryByName(String categoryName) {
     return categoryService.findByName(categoryName);
   }

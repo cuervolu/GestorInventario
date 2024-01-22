@@ -119,5 +119,5 @@ VALUES ('Algodones', 'Bolas de algodón para limpieza y aplicaciones médicas',
 
 
 -- Roles
-INSERT INTO roles (name) VALUES ('ROLE_ADMIN');
-INSERT INTO roles (name) VALUES ('ROLE_USER');
+INSERT INTO roles (name) VALUES ('ADMIN');
+INSERT INTO roles (name) VALUES ('USER');

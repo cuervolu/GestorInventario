@@ -27,13 +27,29 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controlador para la gestión de categorías en el inventario.
+ *
+ * <p>Este controlador maneja las operaciones relacionadas con la gestión de categorías en el
+ * sistema de inventario.
+ *
+ * @author cuervolu
+ * @since 1.0
+ * @version 1.0
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/categories")
 @Tag(name = "Categories", description = "El API de categorías para la gestión de inventario")
 public class CategoryController {
+
   private final ICategoryService categoryService;
 
+  /**
+   * Obtiene todas las categorías almacenadas en la base de datos.
+   *
+   * @return Lista de categorías encontradas.
+   */
   @Operation(
       summary = "Encuentra todas las categorías",
       description = "Encuentra todas las categorías en la base de datos y los retorna en una lista",
@@ -52,6 +68,12 @@ public class CategoryController {
     return categoryService.findAll();
   }
 
+  /**
+   * Obtiene una categoría por su ID.
+   *
+   * @param id ID de la categoría a buscar.
+   * @return ResponseEntity con la categoría encontrada o un mensaje de error si no se encuentra.
+   */
   @Operation(
       summary = "Encuentra una categoría por su id",
       description = "Encuentra una categoría en la base de datos y la retorna",
@@ -71,11 +93,14 @@ public class CategoryController {
                   mediaType = "application/json",
                   schema = @Schema(implementation = Category.class))
             }),
-        @ApiResponse(responseCode = "404", description = "Categoría no encontrada",content = {
-            @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ResponseMessage.class))
-        }),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Categoría no encontrada",
+            content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = ResponseMessage.class))
+            }),
       })
   @GetMapping("/{id}")
   public ResponseEntity<?> findById(@PathVariable Long id) {
@@ -86,6 +111,13 @@ public class CategoryController {
     return ResponseEntity.notFound().build();
   }
 
+  /**
+   * Crea una nueva categoría en la base de datos.
+   *
+   * @param categoryDTO DTO que contiene la información de la categoría a crear.
+   * @return ResponseEntity con la categoría creada y la URI de la ubicación del recurso.
+   * @throws URISyntaxException sí hay un problema con la creación de la URI.
+   */
   @Operation(
       summary = "Crea una categoría",
       description = "Crea una categoría en la base de datos y la retorna",
@@ -107,11 +139,14 @@ public class CategoryController {
                   mediaType = "application/json",
                   schema = @Schema(implementation = Category.class))
             }),
-        @ApiResponse(responseCode = "400", description = "Categoría inválida",content = {
-            @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = ResponseMessage.class))
-        }),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Categoría inválida",
+            content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = ResponseMessage.class))
+            }),
       })
   @PostMapping
   public ResponseEntity<Category> save(@RequestBody CategoryDTO categoryDTO)
@@ -121,6 +156,13 @@ public class CategoryController {
         .body(categoryService.save(category));
   }
 
+  /**
+   * Actualiza una categoría existente en la base de datos.
+   *
+   * @param id ID de la categoría a actualizar.
+   * @param categoryDTO DTO que contiene la información actualizada de la categoría.
+   * @return ResponseEntity con la categoría actualizada o un mensaje de error si no se encuentra.
+   */
   @Operation(
       summary = "Actualiza una categoría",
       description = "Actualiza una categoría en la base de datos y la retorna",
@@ -186,6 +228,13 @@ public class CategoryController {
     return ResponseEntity.notFound().build();
   }
 
+  /**
+   * Elimina una categoría de la base de datos.
+   *
+   * @param id ID de la categoría a eliminar.
+   * @return ResponseEntity con el estado de la eliminación o un mensaje de error si no se
+   *     encuentra.
+   */
   @Operation(
       summary = "Elimina una categoría",
       description = "Elimina una categoría en la base de datos",

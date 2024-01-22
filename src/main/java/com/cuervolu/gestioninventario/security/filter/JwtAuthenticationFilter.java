@@ -1,25 +1,22 @@
 package com.cuervolu.gestioninventario.security.filter;
 
-import static com.cuervolu.gestioninventario.security.TokenJwtConfig.HEADER_AUTHORIZATION;
-import static com.cuervolu.gestioninventario.security.TokenJwtConfig.PREFIX_TOKEN;
-import static com.cuervolu.gestioninventario.security.TokenJwtConfig.SECRET_KEY;
+import static com.cuervolu.gestioninventario.security.TokenJwtConfig.AUTHORIZATION_HEADER;
+import static com.cuervolu.gestioninventario.security.TokenJwtConfig.TOKEN_PREFIX;
 
 import com.cuervolu.gestioninventario.entities.UserEntity;
+import com.cuervolu.gestioninventario.services.IJwtService;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,30 +34,32 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
   private final AuthenticationManager authenticationManager;
+  private final IJwtService jwtService;
 
-  public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+  public JwtAuthenticationFilter(
+      AuthenticationManager authenticationManager, IJwtService jwtService) {
     this.authenticationManager = authenticationManager;
-    setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("api/v1/auth/login", "POST"));
+    this.jwtService = jwtService;
+    setRequiresAuthenticationRequestMatcher(
+        new AntPathRequestMatcher("/api/v1/auth/login", "POST"));
   }
 
   @Override
   public Authentication attemptAuthentication(
       HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
-    User user = null;
-    String username = null;
-    String password = null;
+    UserEntity user;
+    String username;
+    String password;
 
     try {
-      user = new ObjectMapper().readValue(request.getInputStream(), User.class);
+      user = new ObjectMapper().readValue(request.getInputStream(), UserEntity.class);
       username = user.getUsername();
       password = user.getPassword();
-    } catch (StreamReadException e) {
-      e.printStackTrace();
-    } catch (DatabindException e) {
-      e.printStackTrace();
+    } catch (StreamReadException | DatabindException e) {
+      throw new BadCredentialsException("Error en el formato del JSON");
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new BadCredentialsException("Error al leer el JSON");
     }
 
     UsernamePasswordAuthenticationToken authenticationToken =
@@ -75,29 +74,21 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       HttpServletResponse response,
       FilterChain chain,
       Authentication authResult)
-      throws IOException, ServletException {
+      throws IOException {
 
-    org.springframework.security.core.userdetails.User user =
-        (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
+    User user = (User) authResult.getPrincipal();
     String username = user.getUsername();
     Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
-
+    log.debug("roles: {}", roles);
     Claims claims =
         Jwts.claims()
             .add("authorities", new ObjectMapper().writeValueAsString(roles))
             .add("username", username)
             .build();
 
-    String token =
-        Jwts.builder()
-            .subject(username)
-            .claims(claims)
-            .expiration(new Date(System.currentTimeMillis() + 3600000))
-            .issuedAt(new Date())
-            .signWith(SECRET_KEY)
-            .compact();
+    String token = jwtService.generateToken(claims, user);
 
-    response.addHeader(HEADER_AUTHORIZATION, PREFIX_TOKEN + token);
+    response.addHeader(AUTHORIZATION_HEADER, TOKEN_PREFIX + token);
 
     Map<String, String> body = new HashMap<>();
     body.put("token", token);
@@ -112,7 +103,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   @Override
   protected void unsuccessfulAuthentication(
       HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
-      throws IOException, ServletException {
+      throws IOException {
     Map<String, String> body = new HashMap<>();
     body.put("message", "Error en la autenticacion username o password incorrectos!");
     body.put("error", failed.getMessage());
