@@ -50,10 +50,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-     - name: Setup Java
+    - name: Setup Java
       uses: actions/setup-java@v1
       with:
         java-version: 17
+        distribution: 'temurin'
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
