@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 /**
  * Clase que representa un producto en el sistema.
@@ -53,6 +56,11 @@ public class Product {
   private Integer stock;
 
   private boolean sterile = false;
+  
+  @CreatedDate
+  private LocalDateTime createdDate;
+  @LastModifiedDate
+  private LocalDateTime lastModified;
 
   @Column(name = "is_deleted")
   private boolean isDeleted = false;
