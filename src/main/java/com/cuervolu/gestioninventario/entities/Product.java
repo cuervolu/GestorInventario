@@ -19,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -67,6 +69,15 @@ public class Product {
   @LastModifiedDate
   @Column(name = "last_modified", insertable = false)
   private LocalDateTime lastModified;
+
+  @CreatedBy
+  @Column(name = "created_by", nullable = false, updatable = false)
+  private Long createdBy;
+
+  @LastModifiedBy
+  @Column(name = "last_modified_by", insertable = false)
+  private Long lastModifiedBy;
+  
 
   @Column(name = "is_deleted")
   private boolean isDeleted = false;
