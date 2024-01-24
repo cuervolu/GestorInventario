@@ -8,7 +8,6 @@ import com.cuervolu.gestioninventario.repositories.RoleRepository;
 import com.cuervolu.gestioninventario.repositories.UserRepository;
 import com.cuervolu.gestioninventario.services.IUserService;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -50,13 +49,7 @@ public class UserServiceImpl implements IUserService {
     userEntity.setPassword(password);
     return userRepository.save(userEntity);
   }
-
-  @Override
-  @Transactional(readOnly = true)
-  public Optional<UserEntity> findByUsername(String username) {
-    return userRepository.findByUsername(username);
-  }
-
+  
   @Override
   @Transactional(readOnly = true)
   public Optional<UserEntity> findById(Long id) {
@@ -67,10 +60,7 @@ public class UserServiceImpl implements IUserService {
   @Transactional
   public void changePassword(ChangePasswordDTO request, Principal connectedUser) {
     // Asignamos el usuario conectado a la variable user, proveniente del parámetro connectedUser
-    var username = ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
-    Optional<UserEntity> userOptional = userRepository.findByUsername(username.toString());
-    if (userOptional.isPresent()) {
-      UserEntity user = userOptional.get();
+    var user = (UserEntity)((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
       // Comprobamos que la contraseña actual sea correcta
       if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
         throw new IllegalStateException("La contraseña actual no es correcta");
@@ -86,8 +76,5 @@ public class UserServiceImpl implements IUserService {
 
       // Guardamos el usuario en la base de datos
       userRepository.save(user);
-    } else {
-      throw new IllegalStateException("El usuario no existe");
-    }
-  }
+    } 
 }

@@ -1,21 +1,20 @@
 package com.cuervolu.gestioninventario.security;
 
 import com.cuervolu.gestioninventario.security.filter.JwtAuthenticationFilter;
-import com.cuervolu.gestioninventario.security.filter.JwtValidationFilter;
 import com.cuervolu.gestioninventario.services.IJwtService;
-import com.cuervolu.gestioninventario.services.impl.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * Configuración de seguridad para la aplicación. Define la configuración para la autenticación y
@@ -52,10 +51,9 @@ public class SecurityConfig {
     "/login",
   };
 
-  private final UserDetailsServiceImpl userDetailsService;
   private final AuthenticationConfiguration authenticationConfiguration;
-  private final IJwtService jwtService;
-
+  private final JwtAuthenticationFilter jwtAuthFilter;
+  private final AuthenticationProvider authenticationProvider;
   /**
    * Configuración del administrador de autenticación para ser utilizado en la aplicación.
    *
@@ -68,22 +66,12 @@ public class SecurityConfig {
   }
 
   /**
-   * Configuración del codificador de contraseñas utilizado para cifrar y verificar contraseñas.
-   *
-   * @return Un {@link PasswordEncoder} configurado.
-   */
-  @Bean
-  PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
-
-  /**
    * Configuración de la cadena de filtros de seguridad para gestionar la autenticación y
    * autorización de las solicitudes HTTP.
    *
    * @param http Configuración de seguridad HTTP.
    * @return Una cadena de filtros de seguridad configurada.
-   * @throws Exception Si hay algún error al configurar la cadena de filtros de seguridad.
+   * @throws Exception Sí hay algún error al configurar la cadena de filtros de seguridad.
    */
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -93,8 +81,8 @@ public class SecurityConfig {
               auth.requestMatchers(WHITE_LIST_URL).permitAll();
               auth.anyRequest().authenticated();
             })
-        .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtService))
-        .addFilter(new JwtValidationFilter(authenticationManager(), userDetailsService, jwtService))
+        .authenticationProvider(authenticationProvider)
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .build();

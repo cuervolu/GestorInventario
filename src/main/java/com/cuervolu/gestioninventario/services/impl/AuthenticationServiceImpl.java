@@ -24,6 +24,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthenticationServiceImpl implements IAuthenticationService {
 
   private final TokenRepository tokenRepository;
-  private final UserDetailsServiceImpl userDetailsService;
+  private final UserDetailsService userDetailsService;
   private final IUserService userService;
   private final IJwtService jwtService;
   private final AuthenticationManager authenticationManager;
@@ -47,6 +48,9 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             .lastName(request.getLastname())
             .password(request.getPassword())
             .username(request.getUsername())
+            .isAccountNonLocked(true)
+            .isAccountNonExpired(true)
+            .isCredentialsNonExpired(true)
             .enabled(true)
             .build();
 
