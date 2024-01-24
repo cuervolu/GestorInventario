@@ -3,6 +3,7 @@ package com.cuervolu.gestioninventario.entities;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,6 +21,7 @@ import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Clase que representa un producto en el sistema.
@@ -36,6 +38,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "products")
 public class Product {
@@ -56,10 +59,13 @@ public class Product {
   private Integer stock;
 
   private boolean sterile = false;
-  
+
   @CreatedDate
+  @Column(name = "created_date", nullable = false, updatable = false)
   private LocalDateTime createdDate;
+
   @LastModifiedDate
+  @Column(name = "last_modified", insertable = false)
   private LocalDateTime lastModified;
 
   @Column(name = "is_deleted")
