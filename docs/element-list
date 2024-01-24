@@ -1,5 +1,6 @@
 com.cuervolu.gestioninventario
 com.cuervolu.gestioninventario.advice
+com.cuervolu.gestioninventario.auditing
 com.cuervolu.gestioninventario.config
 com.cuervolu.gestioninventario.controllers
 com.cuervolu.gestioninventario.controllers.auth
