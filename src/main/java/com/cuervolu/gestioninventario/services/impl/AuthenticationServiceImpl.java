@@ -5,9 +5,11 @@ import static com.cuervolu.gestioninventario.security.TokenJwtConfig.TOKEN_PREFI
 
 import com.cuervolu.gestioninventario.controllers.dto.LoginDTO;
 import com.cuervolu.gestioninventario.controllers.dto.RegisterDTO;
+import com.cuervolu.gestioninventario.entities.Role;
 import com.cuervolu.gestioninventario.entities.Token;
 import com.cuervolu.gestioninventario.entities.TokenType;
 import com.cuervolu.gestioninventario.entities.UserEntity;
+import com.cuervolu.gestioninventario.entities.UserRole;
 import com.cuervolu.gestioninventario.entities.payload.AuthenticationResponse;
 import com.cuervolu.gestioninventario.repositories.TokenRepository;
 import com.cuervolu.gestioninventario.services.IAuthenticationService;
@@ -17,6 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,8 +48,12 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             .password(request.getPassword())
             .username(request.getUsername())
             .enabled(true)
-            .admin(false)
             .build();
+
+    if (UserRole.ADMIN.equals(request.getRole().getName())) {
+      user.setAdmin(true);
+    }
+
     var savedUser = userService.save(user);
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);

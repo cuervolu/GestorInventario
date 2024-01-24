@@ -1,6 +1,8 @@
 package com.cuervolu.gestioninventario.services;
 
+import com.cuervolu.gestioninventario.controllers.dto.ChangePasswordDTO;
 import com.cuervolu.gestioninventario.entities.UserEntity;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,4 +48,13 @@ public interface IUserService {
    * @return Usuario encontrado, si existe.
    */
   Optional<UserEntity> findById(Long id);
+  
+  
+  /**
+   * Cambia la contraseña de un usuario.
+   *
+   * @param request Información de la nueva contraseña.
+   * @param connectedUser Usuario conectado.
+   */
+  void changePassword(ChangePasswordDTO request, Principal connectedUser);
 }
