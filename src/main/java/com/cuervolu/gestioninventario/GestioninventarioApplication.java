@@ -2,6 +2,7 @@ package com.cuervolu.gestioninventario;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 /**
  * Clase principal de la aplicación que inicia el contexto de Spring Boot.
@@ -18,6 +19,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @version 1.0
  */
 @SpringBootApplication
+@EnableJpaAuditing
 public class GestioninventarioApplication {
 
   /**
