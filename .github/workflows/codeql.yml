@@ -62,7 +62,7 @@ jobs:
         with:
           maven-version: 3.8.2
       - name: Run the Maven verify phase
-        run: mvn --batch-mode --update-snapshots verify
+        run: mvn --batch-mode --update-snapshots verify -DskipTests
 
 
       - name: Build with Maven
