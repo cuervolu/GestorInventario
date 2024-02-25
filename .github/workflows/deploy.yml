@@ -21,7 +21,7 @@ jobs:
         with:
           maven-version: 3.8.2
       - name: Use Maven to build the project
-        run: mvn clean package -X
+        run: mvn clean install -DskipTests
       - name: Rename the artifact
         run: mv target/*.jar gestorinventario-${{github.sha}}.jar
       - name: Save the artifact

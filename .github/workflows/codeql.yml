@@ -56,17 +56,17 @@ jobs:
           java-version: 17
           distribution: 'temurin'
           cache: maven
-      - name: Run the Maven verify phase
-        run: mvn --batch-mode --update-snapshots verify
 
       - name: Setup Maven
         uses: stCarolas/setup-maven@v4.4
         with:
           maven-version: 3.8.2
+      - name: Run the Maven verify phase
+        run: mvn --batch-mode --update-snapshots verify
 
 
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean install -DskipTests
         
         # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
